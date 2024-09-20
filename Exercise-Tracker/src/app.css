@@ -1,0 +1,109 @@
+:root {
+  /* Light Shades */
+  --light-shade: #f3f4ee;
+  /* Light Accent */
+  --light-accent: #9795A4;
+  /* Main Brand Color */
+  --brand-color: #7E86BD;
+  /* Dark Accent */
+  --dark-accent: #756E7D;
+  /* Dark Shades */
+  --dark-shade: #294066;
+  --red-shade: #AE3D55;
+  --green-shade: #54b587;
+
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Anchor styles */
+a {
+  font-weight: 500;
+  color: var(--brand-color); /* Use brand color for links */
+  text-decoration: inherit;
+}
+a:hover {
+  color: var(--light-accent); /* Light accent for hover */
+}
+
+/* Body styling */
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--light-shade); /* Light shade for background */
+  color: var(--dark-shade); /* Dark shade for text */
+}
+
+/* Headings */
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  color: var(--dark-shade); /* Use dark shade */
+}
+
+/* Card styles */
+.card {
+  padding: 2em;
+  background-color: var(--light-shade); /* Light shade for card background */
+  color: var(--dark-shade); /* Dark shade for card text */
+  border: 1px solid var(--dark-accent); /* Dark accent for border */
+}
+
+/* App container */
+#app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: var(--light-shade); /* Light shade background */
+  color: var(--dark-shade); /* Dark shade for text */
+}
+
+/* Button styling for Exercise Card */
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--dark-shade); /* Dark shade for button */
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: var(--brand-color); /* Brand color for hover border */
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto var(--light-accent); /* Light accent for focus */
+}
+
+/* Light mode settings */
+@media (prefers-color-scheme: light) {
+  :root {
+    color: var(--dark-accent); /* Use dark accent for text */
+    background-color: var(--light-shade); /* Light shade for background */
+  }
+  a:hover {
+    color: var(--light-accent); /* Light accent for hover */
+  }
+  button {
+    background-color: var(--light-shade); /* Light shade for button */
+    color: var(--dark-shade); /* Dark shade for button text */
+  }
+}
