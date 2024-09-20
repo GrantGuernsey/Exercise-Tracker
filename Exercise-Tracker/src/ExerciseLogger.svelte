@@ -94,11 +94,11 @@
 
   .emoji {
     font-size: 2rem;
-    margin: 0 10px;
+    margin: 0 5px;
   }
 
   input[type="range"] {
-    width: 200px;
+    width: 150px;
     accent-color: var(--brand-color); /* Main brand color for range slider */
   }
 
@@ -106,9 +106,23 @@
     color: var(--dark-accent)
   }
 
-  .remove-div{
-    padding-bottom: 5px;
+  .set-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center elements horizontally */
   }
+
+  .input-group {
+    display: flex;
+    flex-direction: column; /* Stack label and input vertically */
+    align-items: center; /* Center each input group */
+    margin-bottom: 0.5rem; /* Space between input groups */
+  }
+
+  .remove-div {
+    text-align: center; /* Center the remove set text */
+  }
+
 
 </style>
 
@@ -121,18 +135,25 @@
         <span class="remove-exercise" on:click={() => handleRemoveExercise(index)}>Remove</span>
       </h3>
       {#each logDetails[index] as set, setIndex}
-        <div>
-          <label>Set {setIndex + 1}:</label>
-          <span class = "input-title">Reps:</span>
-          <input class = "rep-input" type="number" value={set.reps} placeholder="Reps"  
+
+      <div class="set-container">
+        <p>Set {setIndex + 1}:</p>
+        <div class="input-group">
+          <span class="input-title">Reps:</span>
+          <input class="rep-input" type="number" value={set.reps} placeholder="Reps"  
             on:input={(e) => handleInputChange(index, setIndex, 'reps', e.target.value)} />
-            <span class = "input-title">Weight:</span>
-          <input class = "weight-input" type="number" value={set.weight} placeholder="Weight" 
-            on:input={(e) => handleInputChange(index, setIndex, 'weight', e.target.value)} />
-          <div class = "remove-div">
-            <span class="remove-set" on:click={() => handleRemoveSet(index, setIndex)}>Remove Set</span>
-          </div>
         </div>
+        <div class="input-group">
+          <span class="input-title">Weight:</span>
+          <input class="weight-input" type="number" value={set.weight} placeholder="Weight" 
+            on:input={(e) => handleInputChange(index, setIndex, 'weight', e.target.value)} />
+        </div>
+        <div class="remove-div">
+          <p class="remove-set" on:click={() => handleRemoveSet(index, setIndex)}>Remove Set</p>
+        </div>
+      </div>
+      
+      
       {/each}
       <span class="add-set" on:click={() => handleAddSet(index)}>+ Add Set</span>
     </div>

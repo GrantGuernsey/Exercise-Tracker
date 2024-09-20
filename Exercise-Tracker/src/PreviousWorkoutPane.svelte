@@ -94,12 +94,19 @@
       width: 100%;
       height: 400px;
     }
+    select {
+        color: var(--dark-accents);
+        background-color: transparent; /* Optional: To keep it consistent */
+    }
+    option {
+        color: var(--dark-accents);
+    }
   </style>
   
   <div>
     <label for="exercise-dropdown">Select Exercise:</label>
     <select id="exercise-dropdown" bind:value={selectedExercise} on:change={fetchWorkoutData}>
-      <option value="" disabled selected>Select an exercise</option>
+      <option class = "ex-dr" value="" disabled selected>Select an exercise</option>
       {#each exercises as exercise}
         <option value={exercise}>{exercise}</option>
       {/each}

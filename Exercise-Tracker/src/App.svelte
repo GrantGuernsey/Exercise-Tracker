@@ -226,7 +226,26 @@
     font-family: Arial, sans-serif;
     margin: 1rem;
     color: var(--dark-shade); /* Use dark shade for text color */
+    display: flex;
+    flex-direction: column;
   }
+
+  .pane-container {
+    display: flex;
+    justify-content: center; /* Center items when no right pane */
+    flex-wrap: wrap; /* Allow wrapping if needed */
+  }
+
+  .left-pane {
+    flex: 1; /* Allow left pane to take available space */
+    max-width: 600px; /* Optional: limit max width */
+  }
+
+  .right-pane {
+    margin-left: 20px; /* Space between left and right panes */
+    flex: 0 0 300px; /* Fixed width for the right pane */
+  }
+
   .button {
     margin-top: 1rem;
     background-color: var(--dark-shade); /* Dark shade for button background */
@@ -252,7 +271,9 @@
   .prev-btn:hover {
     background-color: var(--dark-accent); /* Dark accent for hover state */
   }
-
+  .exercise-pane {
+    margin-top: 2rem; /* Space between the controls and exercise pane */
+  }
   .workout-view {
     margin-top: 1rem;
     padding: 1rem;
@@ -330,103 +351,129 @@
     font-weight: bold;
     margin: 0 10px;
   }
+
+  .controls {
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    margin-bottom: 1rem;
+  }
 </style>
 
 
 <div class="app">
-  <h1>Hello, {userName}!</h1>
+  <div class = "header">
+    <h1>Hello, {userName}!</h1>
+    
+    <!-- Display current date and time -->
+    <p>Current date and time: {currentDate}</p>
+    
+    <!-- Display usage statistics -->
+    <p>You have used the interface for {totalDaysUsed} days.</p>
+    <p>You have been active for {daysActive} days.</p>
+  </div>
   
-  <!-- Display current date and time -->
-  <p>Current date and time: {currentDate}</p>
-  
-  <!-- Display usage statistics -->
-  <p>You have used the interface for {totalDaysUsed} days.</p>
-  <p>You have been active for {daysActive} days.</p>
-  <!-- Button to toggle between current workout logger and previous workouts -->
-  <button class="prev-btn" on:click={toggleView}>
-    {showPrevious ? "Return to Current Logger" : "View Previous Workouts"}
-  </button>
-
-  <button class="button" on:click={handleSetGoals}>
-    Set Goals
-  </button>
-  <PreviousWorkoutPane exercises={allExercises} workouts={dummyWorkouts} />
-
-  <Body 
-    muscleGroups={muscleGroups} 
-    selectedMuscleGroup={selectedMuscleGroup}
-    onSelect={handleMuscleGroupSelect}
-  />
-  {#if selectedMuscleGroup}
-    <ExercisePane 
-      exercises={exercises[selectedMuscleGroup]} 
-      onAddExercise={handleAddExercise}
-    />
-  {/if}
-
-  {#if selectedExercises.length > 0}
-    <button class="button" on:click={handleShowLogger}>
-      {selectedExercises.length} Exercises Added
+  <div class = "controls">
+    <!-- Button to toggle between current workout logger and previous workouts -->
+    <button class="prev-btn" on:click={toggleView}>
+      {showPrevious ? "Return to Current Logger" : "View Previous Workouts"}
     </button>
-  {/if}
-  {#if successMessage}
-  <p class="success-message">{successMessage}</p>
-  {/if}
+    
+    <button class="button" on:click={handleSetGoals}>
+      Set Goals
+    </button>
+    <PreviousWorkoutPane exercises={allExercises} workouts={dummyWorkouts} />
+  </div>
+  <div class = "pane-container">
+    <div class = "left-pane">
 
-  {#if showLogger}
-    <ExerciseLogger 
-      exercises={selectedExercises} 
-      onSubmit={handleLogSubmit}
-      onRemove={handleRemoveExercise}
-    />
-  {/if}
+      <Body 
+        muscleGroups={muscleGroups} 
+        selectedMuscleGroup={selectedMuscleGroup}
+        onSelect={handleMuscleGroupSelect}
+      />
+    </div>
 
-  {#if showPrevious}
-  <div class="workout-view">
-    <h2>Previous Workout {currentWorkoutIndex + 1}</h2>
-
-    <!-- Check if the workout contains a mood entry -->
-    {#if dummyWorkouts[currentWorkoutIndex].mood !== undefined}
-      <div>
-        <h3>Mood</h3>
-        <label>Mood: {dummyWorkouts[currentWorkoutIndex].mood}</label>
-        <input type="range" min="1" max="5" step="1" value={dummyWorkouts[currentWorkoutIndex].mood} 
-          on:input={(e) => dummyWorkouts[currentWorkoutIndex].mood = +e.target.value} />
-        <button on:click={() => saveMood(currentWorkoutIndex, dummyWorkouts[currentWorkoutIndex].mood)}>
-          Save Mood
-        </button>
+    {#if selectedMuscleGroup}
+      <div class = "right-pane">
+        <ExercisePane 
+          exercises={exercises[selectedMuscleGroup]} 
+          onAddExercise={handleAddExercise}
+        />
       </div>
     {/if}
 
-    <!-- Iterate over the exercises -->
-    {#each Object.entries(dummyWorkouts[currentWorkoutIndex]) as [exerciseName, sets]}
-      {#if exerciseName !== 'mood'} <!-- Skip mood from being treated as an exercise -->
-        <div>
-          <h3>{exerciseName}</h3>
-          {#each Object.entries(sets) as [setName, set]}
+    {#if selectedExercises.length > 0 || showLogger || showPrevious}
+      <div>
+        {#if selectedExercises.length > 0}
+          <button class="button" on:click={handleShowLogger}>
+            {selectedExercises.length} Exercises Added
+          </button>
+        {/if}
+        {#if successMessage}
+        <p class="success-message">{successMessage}</p>
+        {/if}
+
+        {#if showLogger}
+          <ExerciseLogger 
+            exercises={selectedExercises} 
+            onSubmit={handleLogSubmit}
+            onRemove={handleRemoveExercise}
+          />
+        {/if}
+
+        {#if showPrevious}
+        <div class="workout-view">
+          <h2>Previous Workout {currentWorkoutIndex + 1}</h2>
+
+          <!-- Check if the workout contains a mood entry -->
+          {#if dummyWorkouts[currentWorkoutIndex].mood !== undefined}
             <div>
-              <label>{setName}</label>
-              <span>Reps: </span>
-              <input class = "rep-input" type="number" value={set.reps} min="0" on:input={(e) => set.reps = +e.target.value} />
-              <span> Weight: </span>
-              <input class = "weight-input" type="number" value={set.weight} min="0" on:input={(e) => set.weight = +e.target.value} />
-              <button on:click={() => saveEdits(currentWorkoutIndex, exerciseName, setName, set.reps, set.weight)}>
-                Save
+              <h3>Mood</h3>
+              <label>Mood: {dummyWorkouts[currentWorkoutIndex].mood}</label>
+              <input type="range" min="1" max="5" step="1" value={dummyWorkouts[currentWorkoutIndex].mood} 
+                on:input={(e) => dummyWorkouts[currentWorkoutIndex].mood = +e.target.value} />
+              <button on:click={() => saveMood(currentWorkoutIndex, dummyWorkouts[currentWorkoutIndex].mood)}>
+                Save Mood
               </button>
             </div>
+          {/if}
+
+          <!-- Iterate over the exercises -->
+          {#each Object.entries(dummyWorkouts[currentWorkoutIndex]) as [exerciseName, sets]}
+            {#if exerciseName !== 'mood'} <!-- Skip mood from being treated as an exercise -->
+            <div>
+              <h3>{exerciseName}</h3>
+              {#each Object.entries(sets) as [setName, set]}
+                <div>
+                  <p>{setName}</p>
+                  <div>
+                    <p>Reps:</p>
+                    <input class="rep-input" type="number" value={set.reps} min="0" on:input={(e) => set.reps = +e.target.value} />
+                  </div>
+                  <div>
+                    <p>Weight:</p>
+                    <input class="weight-input" type="number" value={set.weight} min="0" on:input={(e) => set.weight = +e.target.value} />
+                  </div>
+                  <button on:click={() => saveEdits(currentWorkoutIndex, exerciseName, setName, set.reps, set.weight)}>
+                    Save
+                  </button>
+                </div>
+              {/each}
+            </div>
+            
+            {/if}
           {/each}
+
+          <!-- Navigation buttons for previous/next workouts -->
+          <div class="navigation">
+            <button on:click={prevWorkout} disabled={currentWorkoutIndex === 0}>Previous Workout</button>
+            <button on:click={nextWorkout} disabled={currentWorkoutIndex === dummyWorkouts.length - 1}>Next Workout</button>
+          </div>
         </div>
-      {/if}
-    {/each}
-
-    <!-- Navigation buttons for previous/next workouts -->
-    <div class="navigation">
-      <button on:click={prevWorkout} disabled={currentWorkoutIndex === 0}>Previous Workout</button>
-      <button on:click={nextWorkout} disabled={currentWorkoutIndex === dummyWorkouts.length - 1}>Next Workout</button>
-    </div>
+        {/if}
+      </div>
+    {/if}
   </div>
-  {/if}
-
   <GoalPane showGoalsPane={showGoalsPane} onClose={handleCloseGoalsPane} exercises={allExercises} />
 
 </div>
