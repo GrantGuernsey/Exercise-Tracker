@@ -1,93 +1,125 @@
 <script>
-    import { onMount, tick, onDestroy } from 'svelte';
-    import Chart from 'chart.js/auto';
-    export let exercises = [];
-    export let workouts = [];
-    let selectedExercise = '';
-    let chartData = [];
-    
-    let chart;
+  // ... other imports
+  import { onMount, tick, onDestroy } from 'svelte';
+  import Chart from 'chart.js/auto';
   
-    async function fetchWorkoutData() {
-      if (selectedExercise) {
-        // Reset chartData
-        chartData = [];
+  export let exercises = [];
+  export let workouts = [];
+  export let goalsData = {};
   
-        // Loop through each workout to find sets for the selected exercise
-        workouts.forEach((workout, index) => {
-          const exerciseSets = workout[selectedExercise];  // Access the exercise sets
-    
-          if (exerciseSets) {
-            // Calculate max volume for each set
-            for (const setKey in exerciseSets) {
-              const { reps, weight } = exerciseSets[setKey];
-              chartData.push({ x: index + 1, y: reps * weight });
-            }
-          }
-        });
+  let selectedExercise = '';
+  let chartData = [];
   
-        // Wait for DOM updates to complete
-        await tick();
-  
-        // Update or create the chart
-        createOrUpdateChart();
-      }
-    }
-  
-    // Function to create or update the chart
-    function createOrUpdateChart() {
-      const ctx = document.getElementById('progressChart')?.getContext('2d');
-      
-      if (ctx) {
-        const reversedChartData = [...chartData].reverse(); // Reverse the chartData array
+  let chart;
 
-        if (chart) {
-          // Update the existing chart
-          chart.data.labels = reversedChartData.map(d => d.x);
-          chart.data.datasets[0].data = reversedChartData.map(d => d.y);
-          chart.update();
-        } else {
-          // Create a new chart
-          chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-              labels: reversedChartData.map(d => d.x), // Workout numbers
-              datasets: [{
-                label: 'Max Volume',
-                data: reversedChartData.map(d => d.y),
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 2,
-                fill: false
-              }]
-            },
-            options: {
-              scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: 'Workout Number'
-                  }
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Max Volume (reps * weight)'
-                  }
+  async function fetchWorkoutData() {
+    if (selectedExercise) {
+      chartData = [];
+
+      workouts.forEach((workout, index) => {
+        const exerciseSets = workout[selectedExercise];
+
+        if (exerciseSets) {
+          for (const setKey in exerciseSets) {
+            const { reps, weight } = exerciseSets[setKey];
+            chartData.push({ x: index + 1, y: weight });
+          }
+        }
+      });
+
+      await tick();
+      createOrUpdateChart();
+    }
+  }
+
+  function createOrUpdateChart() {
+    const ctx = document.getElementById('progressChart')?.getContext('2d');
+
+    if (ctx) {
+      const reversedChartData = [...chartData].reverse();
+
+      if (chart) {
+        // Update existing chart
+        chart.data.labels = reversedChartData.map(d => d.x);
+        chart.data.datasets[0].data = reversedChartData.map(d => d.y);
+
+        // Clear previous goal lines
+        chart.data.datasets = chart.data.datasets.filter(ds => !ds.label.includes('Goal'));
+
+        // Add goal lines if applicable
+        addGoalLines(chart);
+
+        chart.update();
+      } else {
+        // Create new chart
+        chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: reversedChartData.map(d => d.x),
+            datasets: [{
+              label: 'Max Weight',
+              data: reversedChartData.map(d => d.y),
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 2,
+              fill: false
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'Workout Number'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: 'Max Weight'
                 }
               }
             }
-          });
-        }
+          }
+        });
+
+        // Add goal lines if applicable
+        addGoalLines(chart);
       }
     }
-    
-    onDestroy(() => {
+  }
+
+  function addGoalLines(chart) {
+    // Check if goals exist for the selected exercise and add them
+    if (selectedExercise === goalsData.exercise1 && goalsData.exercise1) {
+      chart.data.datasets.push({
+        label: `${goalsData.exercise1} Goal`,
+        data: new Array(chart.data.labels.length).fill(goalsData.weight1),
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        borderDash: [5, 5],
+        fill: false
+      });
+    }
+
+    if (selectedExercise === goalsData.exercise2 && goalsData.exercise2) {
+      chart.data.datasets.push({
+        label: `${goalsData.exercise2} Goal`,
+        data: new Array(chart.data.labels.length).fill(goalsData.weight2),
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+        borderDash: [5, 5],
+        fill: false
+      });
+    }
+  }
+
+  onDestroy(() => {
     if (chart) {
       chart.destroy();
     }
-    });
+  });
+</script>
 
-  </script>
   
   <style>
     .graph-container {

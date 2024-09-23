@@ -1,6 +1,6 @@
 <script>
     export let showGoalsPane = false;
-    export let onClose = () => {};
+    export let onClose = (goalsData) => {};
     export let exercises = []; // Array of exercises to populate the dropdowns
   
     let selectedExercise1 = '';
@@ -8,19 +8,19 @@
     let selectedExercise2 = '';
     let goalWeight2 = '';
   
-    // Function to save the goals and close the pane
     const saveGoals = () => {
-      // Here you would typically process the goals and generate graphs
-      // For now, just logging to the console
-      console.log('Goals Set:', {
+      const goalsData = {
         exercise1: selectedExercise1,
         weight1: goalWeight1,
         exercise2: selectedExercise2,
-        weight2: goalWeight2
-      });
-      
-      // Close the goals pane
-      onClose();
+        weight2: goalWeight2,
+      };
+
+      // Log the goals for debugging
+      console.log('Goals Set:', goalsData);
+
+      // Call the onClose function and pass the goals data
+      onClose(goalsData);
     };
   </script>
   

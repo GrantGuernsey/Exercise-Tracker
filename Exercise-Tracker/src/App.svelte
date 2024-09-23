@@ -211,13 +211,15 @@
 
   // State for GoalPane
   let showGoalsPane = false;
-
+  let goals = {};
   const handleSetGoals = () => {
     showGoalsPane = !showGoalsPane;
   };
 
-  const handleCloseGoalsPane = () => {
-    showGoalsPane = false;
+  const handleCloseGoalsPane = (goalsData) => {
+    goals = goalsData; // Update the goals variable with the received data
+    showGoalsPane = false; // Close the goals pane
+    console.log('Received Goals:', goals);
   };
 </script>
 
@@ -381,7 +383,7 @@
     <button class="button" on:click={handleSetGoals}>
       Set Goals
     </button>
-    <PreviousWorkoutPane exercises={allExercises} workouts={dummyWorkouts} />
+    <PreviousWorkoutPane exercises={allExercises} workouts={dummyWorkouts} goalsData = {goals} />
   </div>
   <div class = "pane-container">
     <div class = "left-pane">
@@ -399,19 +401,21 @@
           exercises={exercises[selectedMuscleGroup]} 
           onAddExercise={handleAddExercise}
         />
+
+        {#if selectedExercises.length > 0}
+        <button class="button" on:click={handleShowLogger}>
+          {selectedExercises.length} Exercises Added
+        </button>
+      {/if}
+      {#if successMessage}
+      <p class="success-message">{successMessage}</p>
+      {/if}
       </div>
     {/if}
 
     {#if selectedExercises.length > 0 || showLogger || showPrevious}
       <div>
-        {#if selectedExercises.length > 0}
-          <button class="button" on:click={handleShowLogger}>
-            {selectedExercises.length} Exercises Added
-          </button>
-        {/if}
-        {#if successMessage}
-        <p class="success-message">{successMessage}</p>
-        {/if}
+
 
         {#if showLogger}
           <ExerciseLogger 
