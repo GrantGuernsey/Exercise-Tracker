@@ -159,6 +159,8 @@
     </div>
   {/each}
   <div class="mood-selector">
+    <div>How did you feel duing your workout?</div>
+    
     <span class="emoji">😞</span> <!-- Frowny face -->
     <input type="range" min="1" max="5" bind:value={moodValue} />
     <span class="emoji">😊</span> <!-- Happy face -->

@@ -136,9 +136,9 @@
   </style>
   
   <div>
-    <label for="exercise-dropdown">Select Exercise:</label>
+    <label for="exercise-dropdown">Select Exercise to view progress:</label>
     <select id="exercise-dropdown" bind:value={selectedExercise} on:change={fetchWorkoutData}>
-      <option class = "ex-dr" value="" disabled selected>Select an exercise</option>
+      <option class = "ex-dr" value="" disabled selected>Select exercise</option>
       {#each exercises as exercise}
         <option value={exercise}>{exercise}</option>
       {/each}

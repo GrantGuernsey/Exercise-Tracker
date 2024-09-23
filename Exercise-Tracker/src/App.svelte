@@ -221,6 +221,45 @@
     showGoalsPane = false; // Close the goals pane
     console.log('Received Goals:', goals);
   };
+
+  let selectedMuscleGroupToRemove = '';
+
+const removeSelectedMuscleGroup = () => {
+  if (selectedMuscleGroupToRemove && confirm(`Are you sure you want to remove the ${selectedMuscleGroupToRemove} muscle group? This action cannot be undone.`)) {
+    // Remove the muscle group from the exercises object
+    delete exercises[selectedMuscleGroupToRemove];
+
+    // Also update allExercises to remove the exercises associated with the muscle group
+    //allExercises = allExercises.filter(exercise => !exercises[selectedMuscleGroupToRemove].map(e => e.name).includes(exercise));
+
+    muscleGroups = muscleGroups.filter(group => group !== selectedMuscleGroupToRemove);
+
+    // Clear the selected muscle group to remove
+    selectedMuscleGroupToRemove = '';
+
+    successMessage = `${selectedMuscleGroupToRemove} muscle group removed successfully.`;
+  }
+};
+
+let currentTheme = 'light'; // Default theme
+
+const changeTheme = () => {
+  if (currentTheme === 'light') {
+    document.documentElement.style.setProperty('--light-shade', '#f3f4ee');
+    document.documentElement.style.setProperty('--light-accent', '#9795A4');
+    document.documentElement.style.setProperty('--brand-color', '#7E86BD');
+    document.documentElement.style.setProperty('--dark-accent', '#756E7D');
+    document.documentElement.style.setProperty('--dark-shade', '#294066');
+    currentTheme = 'dark';
+  } else {
+    document.documentElement.style.setProperty('--light-shade', '#ffffff'); // Change as needed
+    document.documentElement.style.setProperty('--light-accent', '#cccccc'); // Change as needed
+    document.documentElement.style.setProperty('--brand-color', '#000000'); // Change as needed
+    document.documentElement.style.setProperty('--dark-accent', '#444444'); // Change as needed
+    document.documentElement.style.setProperty('--dark-shade', '#222222'); // Change as needed
+    currentTheme = 'light';
+  }
+};
 </script>
 
 <style>
@@ -231,7 +270,17 @@
     display: flex;
     flex-direction: column;
   }
-
+  .theme-button {
+    position: absolute; /* Position it at the top left */
+    top: 20px;
+    left: 20px;
+    padding: 10px;
+    background-color: var(--brand-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
   .pane-container {
     display: flex;
     justify-content: center; /* Center items when no right pane */
@@ -259,15 +308,16 @@
     transition: background-color 0.3s, border-color 0.3s;
   }
   .button:hover {
-    background-color: var(--brand-color); /* Brand color for button hover state */
+    background-color: var(--dark-accent); /* Brand color for button hover state */
   }
   .prev-btn {
-    padding: 0.5rem 1rem;
+    margin-top: 1rem;
     background-color: var(--brand-color); /* Brand color for previous button */
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    padding: 0.6em 1.2em; /* Adjusted padding for consistency */
     transition: background-color 0.3s;
   }
   .prev-btn:hover {
@@ -359,10 +409,21 @@
     flex-direction: column; /* Stack buttons vertically */
     margin-bottom: 1rem;
   }
+  select {
+        color: var(--dark-accents);
+        background-color: transparent; /* Optional: To keep it consistent */
+    }
+    option {
+        color: var(--dark-accents);
+    }
 </style>
 
 
 <div class="app">
+  <button class="theme-button" on:click={changeTheme}>
+    Switch Theme
+  </button>
+
   <div class = "header">
     <h1>Hello, {userName}!</h1>
     
@@ -380,11 +441,27 @@
       {showPrevious ? "Return to Current Logger" : "View Previous Workouts"}
     </button>
     
-    <button class="button" on:click={handleSetGoals}>
+    <button class="prev-btn" on:click={handleSetGoals}>
       Set Goals
     </button>
+
+
+  <div>
+    <label for="muscle-group-dropdown">Select Muscle Group to Remove:</label>
+    <select id="muscle-group-dropdown" bind:value={selectedMuscleGroupToRemove}>
+      <option value="" disabled selected>Select muscle group</option>
+      {#each muscleGroups as muscleGroup}
+        <option value={muscleGroup}>{muscleGroup}</option>
+      {/each}
+    </select>
+    <button class="button" on:click={removeSelectedMuscleGroup} disabled={!selectedMuscleGroupToRemove}>
+      Remove Muscle Group
+    </button>
+  </div>
+
     <PreviousWorkoutPane exercises={allExercises} workouts={dummyWorkouts} goalsData = {goals} />
   </div>
+
   <div class = "pane-container">
     <div class = "left-pane">
 
@@ -404,7 +481,7 @@
 
         {#if selectedExercises.length > 0}
         <button class="button" on:click={handleShowLogger}>
-          {selectedExercises.length} Exercises Added
+          View {selectedExercises.length} Exercises Added
         </button>
       {/if}
       {#if successMessage}
@@ -414,7 +491,7 @@
     {/if}
 
     {#if selectedExercises.length > 0 || showLogger || showPrevious}
-      <div>
+      <div class = "right-pane">
 
 
         {#if showLogger}
